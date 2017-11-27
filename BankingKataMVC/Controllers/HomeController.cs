@@ -17,9 +17,24 @@ namespace BankingKataMVC.Controllers {
         }
 
         public ActionResult Contact() {
-            ViewBag.Message = "Your contact page.";
+            ViewBag.Message = "Having trouble? Send us a message.";
 
             return View();
+        }
+
+        [HttpPost]
+        public ActionResult Contact(string message) {
+            ViewBag.Message = "Thanks, we got your message.";
+
+            return View();
+        }
+
+        public ActionResult Serial(string letterCase) {
+            var serial = "ASPNETMVC5ATM1";
+            if (letterCase == "lower")
+                return Content(serial.ToLower());
+
+            return Content(serial);
         }
     }
 }
