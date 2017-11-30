@@ -1,4 +1,5 @@
 ﻿using BankingKataMVC.Models;
+using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,8 @@ namespace BankingKataMVC.Controllers
 {
     public class CheckingAccountController : Controller
     {
+        private ApplicationDbContext db = new ApplicationDbContext();
+
         // GET: CheckingAccount
         public ActionResult Index()
         {
@@ -18,8 +21,19 @@ namespace BankingKataMVC.Controllers
         // GET: CheckingAccount/Details
         public ActionResult Details()
         {
-            var checkingAccount = new CheckingAccount { AccountNumber = "0000123456", FirstName = "Savas", LastName = "Cilve", Balance = 500 };
+            var userId = User.Identity.GetUserId();
+            var checkingAccount = db.CheckingAccounts.Where(c => c.ApplicationUserId == userId).First();
             return View(checkingAccount);
+        }
+
+        [Authorize(Roles = "Admin")]
+        public ActionResult DetailsForAdmin(int id) {
+            var checkingAccount = db.CheckingAccounts.Find(id);
+            return View("Details", checkingAccount);
+        }
+
+        public ActionResult List() {
+            return View(db.CheckingAccounts.ToList());
         }
 
         // GET: CheckingAccount/Create
