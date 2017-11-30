@@ -7,9 +7,9 @@ using System.Web;
 namespace BankingKataMVC.Services {
     public class CheckingAccountService {
 
-        private ApplicationDbContext db;
+        private IApplicationDbContext db;
 
-        public CheckingAccountService(ApplicationDbContext dbContext) {
+        public CheckingAccountService(IApplicationDbContext dbContext) {
             db = dbContext;
         }
 
@@ -22,6 +22,12 @@ namespace BankingKataMVC.Services {
                 Balance = balance,
                 ApplicationUserId = userId };
             db.CheckingAccounts.Add(checkingAccount);
+            db.SaveChanges();
+        }
+
+        public void UpdateBalance(int checkingAccountId) {
+            var checkingAccount = db.CheckingAccounts.Where(c => c.Id == checkingAccountId).First();
+            checkingAccount.Balance = db.Transactions.Where(c => c.CheckingAccountId == checkingAccountId).Sum(c => c.Amount);
             db.SaveChanges();
         }
     }

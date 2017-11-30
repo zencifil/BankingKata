@@ -1,4 +1,5 @@
 ﻿using BankingKataMVC.Models;
+using BankingKataMVC.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,16 @@ namespace BankingKataMVC.Controllers {
 
     [Authorize]
     public class TransactionController : Controller {
-        private ApplicationDbContext db = new ApplicationDbContext();
-        
+        private IApplicationDbContext db;
+
+        public TransactionController() {
+            db = new ApplicationDbContext();
+        }
+
+        public TransactionController(IApplicationDbContext dbContext) {
+            db = dbContext;
+        }
+
         // GET: Transaction
         public ActionResult Deposit(int checkingAccountId) {
 
@@ -22,6 +31,8 @@ namespace BankingKataMVC.Controllers {
             if (ModelState.IsValid) {
                 db.Transactions.Add(transaction);
                 db.SaveChanges();
+                var service = new CheckingAccountService(db);
+                service.UpdateBalance(transaction.CheckingAccountId);
                 return RedirectToAction("Index", "Home");
             }
             return View();

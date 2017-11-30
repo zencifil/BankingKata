@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using BankingKataMVC.Controllers;
 using System.Web.Mvc;
+using BankingKataMVC.Models;
 
 namespace BankingKataMVC.Tests {
     [TestClass]
@@ -18,6 +19,20 @@ namespace BankingKataMVC.Tests {
             var homeController = new HomeController();
             var result = homeController.Contact("I love your bank.") as ViewResult;
             Assert.IsNotNull(result.ViewBag.Message);
+        }
+
+        [TestMethod]
+        public void BalanceIsCorrectAfterDeposit() {
+            var fakeDb = new FakeApplicationDbContext();
+            fakeDb.CheckingAccounts = new FakeDbSet<CheckingAccount>();
+
+            var checkingAccount = new CheckingAccount { Id = 1, AccountNumber = "000123TEST", Balance = 0 };
+            fakeDb.CheckingAccounts.Add(checkingAccount);
+            fakeDb.Transactions = new FakeDbSet<Transaction>();
+            var transactionController = new TransactionController(fakeDb);
+            transactionController.Deposit(new Transaction { CheckingAccountId = 1, Amount = 25 });
+
+            Assert.AreEqual(25, checkingAccount.Balance);
         }
     }
 }
