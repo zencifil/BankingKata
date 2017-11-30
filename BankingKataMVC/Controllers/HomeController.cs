@@ -28,6 +28,10 @@ namespace BankingKataMVC.Controllers {
             return View();
         }
 
+        public ActionResult Foo() {
+            return View("About");
+        }
+
         public ActionResult Contact() {
             ViewBag.Message = "Having trouble? Send us a message.";
 
